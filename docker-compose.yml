@@ -1,0 +1,39 @@
+version: "3.8"
+services:
+  logistics-db:
+    container_name: logilink-db
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: "root"
+      MYSQL_DATABASE: "devops"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - logilink-nt
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot","-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  logistics-app:
+    container_name: logilink-service
+    build: .
+    ports:
+      - "5001:5000"
+    environment:
+      - MYSQL_HOST=logistics-db
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=root
+      - MYSQL_DB=devops
+    networks:
+      - logilink-nt
+    depends_on:
+      logistics-db:
+        condition: service_healthy
+
+volumes:
+  mysql_data:
+
+networks:
+  logilink-nt:
