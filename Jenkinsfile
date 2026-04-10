@@ -13,8 +13,9 @@ pipeline {
         }
         stage('Deployment') {
             steps {
-                sh 'docker compose down || true'
-                sh 'docker compose up -d'
+                sh 'docker compose down --remove-orphans || true'
+                // --no-build ensures it uses the image you made in the 'Build Service' stage
+                sh 'docker compose up -d --no-build'
             }
         }
     }
