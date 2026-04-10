@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Build Service') {
             steps {
-                sh 'docker build -t logilink-app:v2.0 .'
+               sh 'docker build --no-cache -t logilink-app:v2.0 .'
             }
         }
         stage('Deployment') {
