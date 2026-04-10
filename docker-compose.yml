@@ -18,7 +18,7 @@ services:
 
   logistics-app:
     container_name: logilink-service
-    build: logilink-app:v2.0
+    image: logilink-app:v2.0
     ports:
       - "5001:5000"
     environment:
