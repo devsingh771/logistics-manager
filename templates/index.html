@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LogiLink | Global Tracker</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body { background: #0f172a; color: #e2e8f0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .header { border-bottom: 2px solid #334155; padding-bottom: 10px; margin-bottom: 30px; }
+        .header h1 { color: #38bdf8; margin: 0; font-size: 24px; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 30px; }
+        input { flex: 1; padding: 12px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: white; }
+        button { padding: 12px 24px; background: #38bdf8; color: #0f172a; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .log-item { background: #1e293b; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #38bdf8; animation: fadeIn 0.5s ease; }
+        .timestamp { font-size: 0.8em; color: #94a3b8; display: block; margin-bottom: 5px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌐 LOGILINK <span style="font-weight: 200;">| Transit Monitor</span></h1>
+        </div>
+        
+        <div class="input-group">
+            <input type="text" id="statusInput" placeholder="Enter shipment status (e.g. Cleared Customs)...">
+            <button onclick="postUpdate()">Update Feed</button>
+        </div>
+
+        <div id="logFeed">
+            {% for log in logs %}
+            <div class="log-item">
+                <span class="timestamp">{{ log[1] }}</span>
+                {{ log[0] }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        function postUpdate() {
+            const msg = $('#statusInput').val();
+            if(!msg) return;
+            $.post('/update-status', {new_message: msg}, function(data) {
+                const now = new Date().toISOString().replace('T', ' ').substring(0, 19);
+                $('#logFeed').prepend(`
+                    <div class="log-item">
+                        <span class="timestamp">${now}</span>
+                        ${data.entry}
+                    </div>
+                `);
+                $('#statusInput').val('');
+            });
+        }
+    </script>
+</body>
+</html>
